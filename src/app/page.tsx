@@ -4,9 +4,10 @@ import { useState } from "react";
 import Link from "next/link";
 import { SimplexBuilder } from "@/components/SimplexBuilder";
 import { TransportBuilder } from "@/components/TransportBuilder";
+import { NetworkBuilder } from "@/components/NetworkBuilder";
 
 export default function Home() {
-  const [mode, setMode] = useState<"SIMPLEX" | "TRANSPORT">("SIMPLEX");
+  const [mode, setMode] = useState<"SIMPLEX" | "TRANSPORT" | "NETWORK">("SIMPLEX");
 
   return (
     <main className="min-h-screen bg-slate-100 py-10 font-sans text-slate-900 transition-colors">
@@ -26,6 +27,13 @@ export default function Home() {
           >
             Logística (Transporte)
           </button>
+          <button 
+            onClick={() => setMode("NETWORK")}
+            aria-pressed={mode === "NETWORK"}
+            className={`px-8 py-3 rounded-lg font-black tracking-wide text-sm transition-all focus:outline-none focus:ring-4 focus:ring-emerald-200 ${mode === "NETWORK" ? "bg-emerald-600 text-white shadow-md scale-100" : "text-slate-500 hover:bg-slate-50 scale-95 hover:scale-100"}`}
+          >
+            Redes (Grafos)
+          </button>
         </nav>
         
         <Link 
@@ -38,7 +46,9 @@ export default function Home() {
         </Link>
       </div>
       
-      {mode === "SIMPLEX" ? <SimplexBuilder /> : <TransportBuilder />}
+      {mode === "SIMPLEX" && <SimplexBuilder />}
+      {mode === "TRANSPORT" && <TransportBuilder />}
+      {mode === "NETWORK" && <NetworkBuilder />}
     </main>
   );
 }
