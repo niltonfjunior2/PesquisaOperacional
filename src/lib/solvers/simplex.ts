@@ -65,7 +65,7 @@ export class SimplexSolver {
       objRow[i] = model.objectiveType === "MIN" ? model.objectiveCoefficients[i] : -model.objectiveCoefficients[i];
     }
     
-    let artIdxForObj = this.numVars + numSlacks;
+    const artIdxForObj = this.numVars + numSlacks;
     for (let i = 0; i < numArtificials; i++) {
       objRow[artIdxForObj + i] = this.BIG_M; 
     }

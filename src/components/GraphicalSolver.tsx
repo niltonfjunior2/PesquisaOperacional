@@ -26,6 +26,7 @@ export function GraphicalSolver({ model, result }: Props) {
     if (model.numVariables === 2) {
       try {
         const generated = generateGraphicalData(model);
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setData(generated);
       } catch (e) {
         console.error("Erro ao gerar dados gráficos:", e);
@@ -92,6 +93,7 @@ export function GraphicalSolver({ model, result }: Props) {
             <Tooltip 
               cursor={{ strokeDasharray: '3 3' }} 
               contentStyle={{ borderRadius: '8px', border: '1px solid #cbd5e1', fontWeight: 'bold', color: '#1e293b' }}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               formatter={(value: any) => typeof value === 'number' ? value.toFixed(2) : value}
             />
 

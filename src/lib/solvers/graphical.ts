@@ -1,4 +1,4 @@
-import { Constraint, LinearProgram } from "../schemas/linear-program";
+import { LinearProgram } from "../schemas/linear-program";
 
 export interface Point2D {
   x: number;

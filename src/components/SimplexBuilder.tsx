@@ -35,6 +35,7 @@ export function SimplexBuilder() {
     }
 
     if (initialModel) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setNumVariables(initialModel.numVariables);
       setObjectiveType(initialModel.objectiveType);
       setObjectiveCoefficients(initialModel.objectiveCoefficients);
@@ -123,8 +124,8 @@ export function SimplexBuilder() {
     try {
       await navigator.clipboard.writeText(url);
       alert("Link copiado! Qualquer um com o link abrirá este exato modelo instantaneamente.");
-    } catch (err) {
-      alert("Copie este link: " + url);
+    } catch (_) {
+      alert("Arquivo inválido ou corrompido.");
     }
   };
 
