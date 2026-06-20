@@ -51,20 +51,57 @@ Este backlog reflete as funcionalidades fundamentais priorizadas baseadas no val
 
 ## 📌 Épico 1: Auto-Balanceamento Logístico
 
-- [ ] **História:** Como aluno, quero que o software detecte matrizes de transporte desbalanceadas e ofereça a criação automática de nós fictícios para que eu não receba o erro "Inviável".
+* [ ] **História:** Como aluno, quero que o software detecte matrizes de transporte desbalanceadas e ofereça a criação automática de nós fictícios para que eu não receba o erro "Inviável".
+
 * [ ] **Tarefa:** Atualizar `transformTransportToSimplex` para injetar variáveis mudas com custo Cij = 0 quando `Soma Oferta != Soma Demanda`.
 
 ## 📌 Épico 2: Relatórios Acadêmicos em PDF
 
-- [ ] **História:** Como professor, quero gerar um relatório PDF passo a passo da solução matemática para facilitar a correção da prova.
+* [ ] **História:** Como professor, quero gerar um relatório PDF passo a passo da solução matemática para facilitar a correção da prova.
+
 * [ ] **Tarefa:** Integrar a biblioteca `jspdf` ou `html2canvas` para realizar "snapshots" do quadro final (Tableau) e variáveis de folga.
 
 ## 📌 Épico 3: Compressão Avançada de Magic URLs
 
-- [ ] **História:** Como usuário, quero compartilhar links curtos de modelos gigantes (15x15) sem bater no limite de caracteres do navegador.
+* [ ] **História:** Como usuário, quero compartilhar links curtos de modelos gigantes (15x15) sem bater no limite de caracteres do navegador.
+
 * [ ] **Tarefa:** Integrar o módulo `lz-string` no pipeline de persistência antes de gerar o código Base64 e hidratar o estado.
 
 ## 📌 Épico 4: Motor de Redes / Caminho Mínimo
 
-- [ ] **História:** Como aluno avançado, quero um canvas desenhável para rotear grafos e calcular o caminho crítico.
+* [ ] **História:** Como aluno avançado, quero um canvas desenhável para rotear grafos e calcular o caminho crítico.
+
 * [ ] **Tarefa:** Criar novo construtor visual de Grafos (Nodes/Edges) baseado no Algoritmo de Dijkstra.
+
+# PRODUCT BACKLOG - Visão de Futuro (V2)
+
+## 📌 Épico 1: Auto-Balanceamento Logístico
+
+- [ ] **História:** Como aluno, quero que o software detecte matrizes de transporte desbalanceadas e ofereça a criação automática de nós fictícios.
+
+* [ ] **Tarefa:** Atualizar `transformTransportToSimplex` para injetar variáveis mudas.
+
+## 📌 Épico 2: Relatórios Acadêmicos em PDF
+
+- [ ] **História:** Como professor, quero gerar um relatório PDF passo a passo da solução matemática para facilitar a correção da prova.
+
+* [ ] **Tarefa:** Integrar a biblioteca `jspdf` ou `html2canvas`.
+
+## 📌 Épico 3: Compressão Avançada de Magic URLs
+
+- [ ] **História:** Como usuário, quero compartilhar links curtos de modelos gigantes sem bater no limite de caracteres do navegador.
+
+* [ ] **Tarefa:** Integrar o módulo `lz-string` no pipeline de persistência.
+
+## 📌 Épico 4: Motor de Redes / Caminho Mínimo [CONCLUÍDO] ✅
+
+- [x] **História:** Como aluno avançado, quero um canvas desenhável para rotear grafos e calcular o caminho crítico.
+
+* [x] **Tarefa:** Criar novo construtor visual de Grafos baseado no Algoritmo de Dijkstra (`@xyflow/react`).
+
+## 📌 Épico 5 (Tech Debt): Refatoração de UI/Performance de Redes
+
+- [ ] **História:** Como engenheiro de software, quero rodar Dijkstra sem travar a Main Thread e sem usar pop-ups nativos do navegador.
+
+* [ ] **Tarefa:** Migrar `solveDijkstra` para Web Worker.
+* [ ] **Tarefa:** Criar um `EdgeWeightModal` em Tailwind, removendo o `window.prompt()` atual do `NetworkBuilder.tsx`.
