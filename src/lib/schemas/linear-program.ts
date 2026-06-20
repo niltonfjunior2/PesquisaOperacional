@@ -17,7 +17,7 @@ export const LinearProgramSchema = z.object({
   constraints: z.array(ConstraintSchema),
   numVariables: z.number().positive().int(),
   nonNegativity: z.boolean().default(true).optional(),
-  variableBounds: z.array(z.number().int().nonnegative()).optional(),
+  variableBounds: z.array(z.number().nonnegative()).optional(),
 });
 
 export type ObjectiveType = z.infer<typeof ObjectiveTypeSchema>;

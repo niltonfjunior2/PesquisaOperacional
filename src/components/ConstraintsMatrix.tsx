@@ -171,12 +171,12 @@ export function ConstraintsMatrix({ constraints, setConstraints, numVariables, n
                     </label>
                     <div>
                       <strong className={nonNegativity ? "text-emerald-800" : "text-orange-800"}>
-                        {nonNegativity ? "Restrições de Não Negatividade Ativas" : "Variáveis Livres (Irrestritas em Sinal)"}
+                        {nonNegativity ? "Restrições de Não Negatividade Ativas" : "Restrições de Não Negatividade Desativadas"}
                       </strong>
                       <p className="text-sm text-slate-600">
                         {nonNegativity 
-                          ? "Você pode alterar o limite mínimo (padrão 0) para valores inteiros positivos." 
-                          : "O algoritmo permitirá que as variáveis assumam valores negativos."}
+                          ? "Permite editar os limites mínimos das variáveis para valores >= 0." 
+                          : "Nenhuma restrição de não negatividade será aplicada ao processo de otimização."}
                       </p>
                     </div>
                   </div>
@@ -190,10 +190,10 @@ export function ConstraintsMatrix({ constraints, setConstraints, numVariables, n
                           <input 
                             type="number"
                             min="0"
-                            step="1"
-                            value={variableBounds[j] || 0}
+                            step="0.1"
+                            value={variableBounds[j] !== undefined ? variableBounds[j] : 0}
                             onChange={(e) => {
-                              const val = parseInt(e.target.value);
+                              const val = parseFloat(e.target.value);
                               if (!isNaN(val) && val >= 0) {
                                 const newBounds = [...variableBounds];
                                 newBounds[j] = val;
