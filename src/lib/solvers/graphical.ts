@@ -22,6 +22,10 @@ export interface GraphicalData {
 
 const TOLERANCE = 1e-6;
 
+export function isDuplicate(p1: Point2D, p2: Point2D): boolean {
+  return Math.abs(p1.x - p2.x) < TOLERANCE && Math.abs(p1.y - p2.y) < TOLERANCE;
+}
+
 export function extractLines(model: LinearProgram): Line2D[] {
   const lines: Line2D[] = [];
   
@@ -62,8 +66,8 @@ export function findIntersections(lines: Line2D[]): Point2D[] {
         const y = (l1.a * l2.c - l2.a * l1.c) / det;
         
         // Avoid adding near-duplicates
-        const isDuplicate = points.some(p => Math.abs(p.x - x) < TOLERANCE && Math.abs(p.y - y) < TOLERANCE);
-        if (!isDuplicate) {
+        const isDup = points.some(p => isDuplicate(p, {x, y}));
+        if (!isDup) {
           points.push({ x: x === 0 ? 0 : x, y: y === 0 ? 0 : y });
         }
       }
@@ -151,7 +155,7 @@ export function generateGraphicalData(model: LinearProgram): GraphicalData {
     // De-duplicate valid points
     const uniquePts: Point2D[] = [];
     validPts.forEach(vp => {
-      if (!uniquePts.some(up => Math.abs(up.x - vp.x) < TOLERANCE && Math.abs(up.y - vp.y) < TOLERANCE)) {
+      if (!uniquePts.some(up => isDuplicate(up, vp))) {
         uniquePts.push(vp);
       }
     });

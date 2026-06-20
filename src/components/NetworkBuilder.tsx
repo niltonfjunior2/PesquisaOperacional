@@ -95,18 +95,16 @@ export function NetworkBuilder() {
     setResult(res);
 
     if (res.status === "OPTIMAL") {
-      setEdges(eds => eds.map(e => {
-        let inPath = false;
-        
-        // Verifica se a aresta faz parte do caminho direcional
-        for (let i = 0; i < res.path.length - 1; i++) {
-          if (e.source === res.path[i] && e.target === res.path[i+1]) {
-            inPath = true; break;
-          }
-          if (undirected && e.target === res.path[i] && e.source === res.path[i+1]) {
-            inPath = true; break;
-          }
+      const pathEdges = new Set<string>();
+      for (let i = 0; i < res.path.length - 1; i++) {
+        pathEdges.add(`${res.path[i]}->${res.path[i+1]}`);
+        if (undirected) {
+          pathEdges.add(`${res.path[i+1]}->${res.path[i]}`);
         }
+      }
+
+      setEdges(eds => eds.map(e => {
+        const inPath = pathEdges.has(`${e.source}->${e.target}`);
 
         if (inPath) {
           return {
