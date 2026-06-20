@@ -35,6 +35,11 @@ export default function ManualPage() {
               <p className="text-blue-800 mt-4 text-sm"><strong>Como fazer no sistema:</strong> Ajuste as variáveis para 2 e restrições para 2. Digite os coeficientes 50 e 20 na Função Objetivo. Preencha a Matriz de Restrições com os números 4, 3, ≤, 120 (linha 1) e 2, 1, ≤, 50 (linha 2). Clique em "Resolver".</p>
             </div>
 
+            <h3 className="text-xl font-bold text-slate-800 mt-6 mb-3">📈 O Método Gráfico (Geometria do Simplex)</h3>
+            <p className="mb-4">
+              Sempre que o seu problema possuir <strong>exatamente 2 variáveis (X1 e X2)</strong>, o sistema desenhará automaticamente o plano cartesiano abaixo da tabela de resultados. O Polígono Verde representa a "Região Viável" (todas as combinações possíveis que respeitam as restrições). A "Estrela Vermelha" aponta o vértice exato que maximiza (ou minimiza) a sua Função Objetivo.
+            </p>
+
             <h3 className="text-xl font-bold text-slate-800 mt-6 mb-3">⚡ Dica de Produtividade (Acessibilidade)</h3>
             <p className="mb-4">
               Você <strong>não precisa do mouse</strong> para preencher as matrizes. Clique na primeira caixa e utilize as <strong>setas do teclado</strong> (<kbd className="bg-slate-200 px-2 py-1 rounded border shadow-sm">↑</kbd> <kbd className="bg-slate-200 px-2 py-1 rounded border shadow-sm">↓</kbd> <kbd className="bg-slate-200 px-2 py-1 rounded border shadow-sm">←</kbd> <kbd className="bg-slate-200 px-2 py-1 rounded border shadow-sm">→</kbd>) para "voar" entre as células, assim como no Excel.
@@ -68,8 +73,24 @@ export default function ManualPage() {
             </div>
           </section>
 
+          <section className="mb-12">
+            <h2 className="text-2xl font-bold text-slate-800 mb-4 bg-slate-100 p-3 rounded-lg border-l-4 border-teal-500">Módulo 3: Redes e Grafos (Dijkstra)</h2>
+            <p className="mb-4">
+              Este módulo permite desenhar rotas logísticas e de telecomunicações para descobrir o "Caminho Mais Curto" entre dois pontos.
+            </p>
+
+            <div className="bg-teal-50 border border-teal-100 p-5 rounded-xl mb-6">
+              <h3 className="text-lg font-bold text-teal-900 mb-2">📌 Como Utilizar</h3>
+              <ul className="list-disc ml-6 text-teal-800 space-y-2 font-medium">
+                <li><strong>Criar Cidades:</strong> Clique no botão "+ Adicionar Cidade" no topo da aba. O sistema soltará uma nova bolinha no mapa. Você pode arrastá-la livremente.</li>
+                <li><strong>Criar Estradas:</strong> Posicione o mouse sobre uma cidade até aparecer um pequeno "ponto" em sua borda (Handle). Clique nele e arraste até outra cidade para criar uma rota. O sistema pedirá que você digite a distância (ou custo) desta estrada.</li>
+                <li><strong>Calcular Caminho Mínimo:</strong> No painel esquerdo, selecione a cidade de Partida e o Destino Final. Clique em "Calcular Dijkstra". O algoritmo varrerá o mapa inteiro e pintará de Verde Esmeralda a rota exata que custa menos!</li>
+              </ul>
+            </div>
+          </section>
+
           <section>
-            <h2 className="text-2xl font-bold text-slate-800 mb-4 bg-slate-100 p-3 rounded-lg border-l-4 border-emerald-500">Módulo 3: Salvar e Compartilhar</h2>
+            <h2 className="text-2xl font-bold text-slate-800 mb-4 bg-slate-100 p-3 rounded-lg border-l-4 border-emerald-500">Módulo 4: Salvar e Compartilhar</h2>
             <p className="mb-4">
               O sistema não exige login e não grava nada na nuvem, garantindo a sua privacidade. Para guardar exercícios, utilize a barra inferior do painel Simplex:
             </p>
