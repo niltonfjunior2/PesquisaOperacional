@@ -10,6 +10,7 @@ import { saveToLocalStorage, loadFromLocalStorage, clearLocalStorage } from "@/l
 import { createMagicUrl, parseMagicUrl } from "@/lib/persistence/magic-url";
 import { exportToFile, importFromFile } from "@/lib/persistence/file-io";
 import { SensitivityAnalysis } from "./SensitivityAnalysis";
+import { GraphicalSolver } from "./GraphicalSolver";
 
 export function SimplexBuilder() {
   const [numVariables, setNumVariables] = useState<number>(2);
@@ -257,6 +258,11 @@ export function SimplexBuilder() {
       
       {result && result.status === 'OPTIMAL' && (
         <SensitivityAnalysis result={result} numConstraints={constraints.length} />
+      )}
+      
+      {/* Método Gráfico (Apenas para X1 e X2) */}
+      {numVariables === 2 && (
+        <GraphicalSolver model={{ numVariables, objectiveType, objectiveCoefficients, constraints }} result={result} />
       )}
     </div>
   );
