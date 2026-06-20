@@ -1,5 +1,5 @@
 // src/lib/solvers/simplex.ts
-import { LinearProgram } from "../schemas/linear-program";
+import { LinearProgram, Constraint } from "../schemas/linear-program";
 
 export interface SimplexResult {
   status: "OPTIMAL" | "UNBOUNDED" | "INFEASIBLE" | "ERROR";
