@@ -149,6 +149,14 @@ export function ConstraintsMatrix({ constraints, setConstraints, numVariables }:
                 </td>
               </tr>
             )}
+            
+            {/* Non-negativity Constraint Indicator */}
+            <tr className="bg-slate-50 border-t-2 border-slate-300">
+              <td className="p-3 font-bold text-slate-500 text-center">NN</td>
+              <td colSpan={numVariables + 3} className="p-3 text-slate-600 font-medium text-center">
+                <strong>Restrições de Não Negatividade:</strong> Todas as variáveis de decisão (x₁, x₂, ...) são assumidas como &ge; 0.
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>
