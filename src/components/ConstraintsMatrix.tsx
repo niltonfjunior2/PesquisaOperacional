@@ -6,9 +6,13 @@ interface Props {
   constraints: Constraint[];
   setConstraints: (c: Constraint[]) => void;
   numVariables: number;
+  nonNegativity: boolean;
+  setNonNegativity: (v: boolean) => void;
+  variableBounds: number[];
+  setVariableBounds: (v: number[]) => void;
 }
 
-export function ConstraintsMatrix({ constraints, setConstraints, numVariables }: Props) {
+export function ConstraintsMatrix({ constraints, setConstraints, numVariables, nonNegativity, setNonNegativity, variableBounds, setVariableBounds }: Props) {
   
   const addConstraint = () => {
     setConstraints([
@@ -151,10 +155,62 @@ export function ConstraintsMatrix({ constraints, setConstraints, numVariables }:
             )}
             
             {/* Non-negativity Constraint Indicator */}
-            <tr className="bg-slate-50 border-t-2 border-slate-300">
-              <td className="p-3 font-bold text-slate-500 text-center">NN</td>
-              <td colSpan={numVariables + 3} className="p-3 text-slate-600 font-medium text-center">
-                <strong>Restrições de Não Negatividade:</strong> Todas as variáveis de decisão (x₁, x₂, ...) são assumidas como &ge; 0.
+            <tr className={`border-t-2 border-slate-300 transition-colors ${nonNegativity ? 'bg-emerald-50/50' : 'bg-orange-50/50'}`}>
+              <td className="p-3 font-bold text-slate-500 text-center align-middle">NN</td>
+              <td colSpan={numVariables + 3} className="p-3 align-middle">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        className="sr-only peer" 
+                        checked={nonNegativity} 
+                        onChange={(e) => setNonNegativity(e.target.checked)}
+                      />
+                      <div className="w-11 h-6 bg-slate-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-emerald-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                    </label>
+                    <div>
+                      <strong className={nonNegativity ? "text-emerald-800" : "text-orange-800"}>
+                        {nonNegativity ? "Restrições de Não Negatividade Ativas" : "Variáveis Livres (Irrestritas em Sinal)"}
+                      </strong>
+                      <p className="text-sm text-slate-600">
+                        {nonNegativity 
+                          ? "Você pode alterar o limite mínimo (padrão 0) para valores inteiros positivos." 
+                          : "O algoritmo permitirá que as variáveis assumam valores negativos."}
+                      </p>
+                    </div>
+                  </div>
+
+                  {nonNegativity && (
+                    <div className="flex flex-wrap items-center gap-3 border-l pl-4 border-emerald-200">
+                      <span className="text-sm font-semibold text-emerald-800">Limites Mínimos:</span>
+                      {Array.from({ length: numVariables }).map((_, j) => (
+                        <div key={j} className="flex items-center gap-1">
+                          <span className="text-xs font-bold text-slate-500">x{j+1} &ge;</span>
+                          <input 
+                            type="number"
+                            min="0"
+                            step="1"
+                            value={variableBounds[j] || 0}
+                            onChange={(e) => {
+                              const val = parseInt(e.target.value);
+                              if (!isNaN(val) && val >= 0) {
+                                const newBounds = [...variableBounds];
+                                newBounds[j] = val;
+                                setVariableBounds(newBounds);
+                              } else if (e.target.value === "") {
+                                const newBounds = [...variableBounds];
+                                newBounds[j] = 0;
+                                setVariableBounds(newBounds);
+                              }
+                            }}
+                            className="w-14 p-1 border border-emerald-300 rounded text-center text-sm font-bold focus:ring-2 focus:ring-emerald-500"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </td>
             </tr>
           </tbody>

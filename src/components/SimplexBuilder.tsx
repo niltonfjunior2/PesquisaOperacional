@@ -18,6 +18,8 @@ export function SimplexBuilder() {
   const [objectiveType, setObjectiveType] = useState<ObjectiveType>("MAX");
   const [objectiveCoefficients, setObjectiveCoefficients] = useState<number[]>([0, 0]);
   const [constraints, setConstraints] = useState<Constraint[]>([]);
+  const [nonNegativity, setNonNegativity] = useState<boolean>(true);
+  const [variableBounds, setVariableBounds] = useState<number[]>([0, 0]);
   const [result, setResult] = useState<SimplexResult | null>(null);
   const [isSolving, setIsSolving] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -43,6 +45,8 @@ export function SimplexBuilder() {
       setObjectiveType(initialModel.objectiveType);
       setObjectiveCoefficients(initialModel.objectiveCoefficients);
       setConstraints(initialModel.constraints);
+      if (initialModel.nonNegativity !== undefined) setNonNegativity(initialModel.nonNegativity);
+      if (initialModel.variableBounds !== undefined) setVariableBounds(initialModel.variableBounds);
     }
 
     workerRef.current = new Worker(new URL('@/lib/workers/simplex.worker.ts', import.meta.url));
@@ -70,7 +74,9 @@ export function SimplexBuilder() {
         numVariables,
         objectiveType,
         objectiveCoefficients,
-        constraints
+        constraints,
+        nonNegativity,
+        variableBounds
       };
       
       const validation = LinearProgramSchema.safeParse(payload);
@@ -80,7 +86,7 @@ export function SimplexBuilder() {
     }, 1000);
 
     return () => clearTimeout(timeout);
-  }, [numVariables, objectiveType, objectiveCoefficients, constraints, isLoaded]);
+  }, [numVariables, objectiveType, objectiveCoefficients, constraints, nonNegativity, variableBounds, isLoaded]);
 
   const handleNumVarsChange = (newNum: number) => {
     if (newNum < 1 || newNum > 20) return;
@@ -90,10 +96,11 @@ export function SimplexBuilder() {
       ...c, 
       coefficients: resizeArray(c.coefficients, newNum, 0)
     })));
+    setVariableBounds(resizeArray(variableBounds, newNum, 0));
   };
 
   const handleExport = () => {
-    const payload: LinearProgram = { numVariables, objectiveType, objectiveCoefficients, constraints };
+    const payload: LinearProgram = { numVariables, objectiveType, objectiveCoefficients, constraints, nonNegativity, variableBounds };
     exportToFile(payload);
   };
 
@@ -107,6 +114,8 @@ export function SimplexBuilder() {
       setObjectiveType(model.objectiveType);
       setObjectiveCoefficients(model.objectiveCoefficients);
       setConstraints(model.constraints);
+      if (model.nonNegativity !== undefined) setNonNegativity(model.nonNegativity);
+      if (model.variableBounds !== undefined) setVariableBounds(model.variableBounds);
       alert("Projeto importado com sucesso!");
     } catch (err) {
       Sentry.captureException(err, { tags: { context: "file_import" }});
@@ -117,7 +126,7 @@ export function SimplexBuilder() {
   };
 
   const handleShare = async () => {
-    const payload: LinearProgram = { numVariables, objectiveType, objectiveCoefficients, constraints };
+    const payload: LinearProgram = { numVariables, objectiveType, objectiveCoefficients, constraints, nonNegativity, variableBounds };
     const url = createMagicUrl(payload);
     if (!url) {
       alert("Erro ao gerar link de compartilhamento.");
@@ -139,6 +148,8 @@ export function SimplexBuilder() {
       setObjectiveType("MAX");
       setObjectiveCoefficients([0, 0]);
       setConstraints([]);
+      setNonNegativity(true);
+      setVariableBounds([0, 0]);
       setResult(null);
     }
   };
@@ -156,7 +167,7 @@ export function SimplexBuilder() {
   };
 
   const solve = () => {
-    const payload: LinearProgram = { numVariables, objectiveType, objectiveCoefficients, constraints };
+    const payload: LinearProgram = { numVariables, objectiveType, objectiveCoefficients, constraints, nonNegativity, variableBounds };
     const validation = LinearProgramSchema.safeParse(payload);
     if (!validation.success) {
       alert("Erro estrutural na validação dos dados de entrada. Verifique as matrizes.");
@@ -222,6 +233,10 @@ export function SimplexBuilder() {
         numVariables={numVariables}
         constraints={constraints}
         setConstraints={setConstraints}
+        nonNegativity={nonNegativity}
+        setNonNegativity={setNonNegativity}
+        variableBounds={variableBounds}
+        setVariableBounds={setVariableBounds}
       />
 
       <div className="flex justify-end mb-8">
@@ -289,7 +304,7 @@ export function SimplexBuilder() {
           {/* Método Gráfico (Apenas para X1 e X2) */}
           {numVariables === 2 && (
             <div className="bg-white rounded-xl shadow-md overflow-hidden border border-slate-200">
-              <GraphicalSolver model={{ numVariables, objectiveType, objectiveCoefficients, constraints }} result={result} />
+              <GraphicalSolver model={{ numVariables, objectiveType, objectiveCoefficients, constraints, nonNegativity, variableBounds }} result={result} />
             </div>
           )}
         </div>

@@ -76,7 +76,7 @@ export function GraphicalSolver({ model, result }: Props) {
               type="number" 
               dataKey="x" 
               name="X1" 
-              domain={[0, data.maxX]} 
+              domain={[data.minX ?? 0, data.maxX]} 
               stroke="#64748b"
             >
               <Label value="Variável X1" offset={-10} position="insideBottom" fill="#475569" fontWeight="bold"/>
@@ -85,7 +85,7 @@ export function GraphicalSolver({ model, result }: Props) {
               type="number" 
               dataKey="y" 
               name="X2" 
-              domain={[0, data.maxY]} 
+              domain={[data.minY ?? 0, data.maxY]} 
               stroke="#64748b"
             >
               <Label value="Variável X2" angle={-90} position="insideLeft" fill="#475569" fontWeight="bold"/>

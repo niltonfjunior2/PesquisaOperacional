@@ -18,6 +18,8 @@ export interface GraphicalData {
   lines: { p1: Point2D; p2: Point2D; constraintIdx: number }[];
   maxX: number;
   maxY: number;
+  minX?: number;
+  minY?: number;
 }
 
 const TOLERANCE = 1e-6;
@@ -29,9 +31,13 @@ export function isDuplicate(p1: Point2D, p2: Point2D): boolean {
 export function extractLines(model: LinearProgram): Line2D[] {
   const lines: Line2D[] = [];
   
-  // Axes constraints X >= 0, Y >= 0
-  lines.push({ a: 1, b: 0, c: 0, operator: ">=", originalIndex: -1 }); // X >= 0
-  lines.push({ a: 0, b: 1, c: 0, operator: ">=", originalIndex: -2 }); // Y >= 0
+  // Axes constraints X >= boundX, Y >= boundY
+  if (model.nonNegativity !== false) {
+    const boundX = model.variableBounds?.[0] || 0;
+    const boundY = model.variableBounds?.[1] || 0;
+    lines.push({ a: 1, b: 0, c: boundX, operator: ">=", originalIndex: -1 }); // X >= boundX
+    lines.push({ a: 0, b: 1, c: boundY, operator: ">=", originalIndex: -2 }); // Y >= boundY
+  }
 
   // Problem constraints
   model.constraints.forEach((c, i) => {
@@ -117,13 +123,31 @@ export function generateGraphicalData(model: LinearProgram): GraphicalData {
   const polygon = sortCounterClockwise(feasiblePoints);
 
   // Determine bounds for the chart
+  let minX = 0;
+  let minY = 0;
   let maxX = 10;
   let maxY = 10;
+  
   if (allIntersections.length > 0) {
-    const validX = allIntersections.map(p => p.x).filter(x => x >= 0 && x < 100000);
-    const validY = allIntersections.map(p => p.y).filter(y => y >= 0 && y < 100000);
-    if (validX.length > 0) maxX = Math.max(10, ...validX) * 1.1; // 10% padding
-    if (validY.length > 0) maxY = Math.max(10, ...validY) * 1.1;
+    // If unrestricted, we consider negative bounds too
+    const lowerX = model.nonNegativity === false ? -100000 : 0;
+    const lowerY = model.nonNegativity === false ? -100000 : 0;
+
+    const validX = allIntersections.map(p => p.x).filter(x => x >= lowerX && x < 100000);
+    const validY = allIntersections.map(p => p.y).filter(y => y >= lowerY && y < 100000);
+
+    if (validX.length > 0) {
+      if (model.nonNegativity === false) {
+        minX = Math.min(0, ...validX) * 1.1 - 5;
+      }
+      maxX = Math.max(10, ...validX) * 1.1; 
+    }
+    if (validY.length > 0) {
+      if (model.nonNegativity === false) {
+        minY = Math.min(0, ...validY) * 1.1 - 5;
+      }
+      maxY = Math.max(10, ...validY) * 1.1;
+    }
   }
 
   // Generate plottable line segments across the chart view
@@ -149,8 +173,8 @@ export function generateGraphicalData(model: LinearProgram): GraphicalData {
       pts.push({ x: (line.c - line.b * maxY) / line.a, y: maxY });
     }
 
-    // Filter points that are within bounds [0, maxX] and [0, maxY]
-    const validPts = pts.filter(p => p.x >= -TOLERANCE && p.x <= maxX + TOLERANCE && p.y >= -TOLERANCE && p.y <= maxY + TOLERANCE);
+    // Filter points that are within bounds [minX, maxX] and [minY, maxY]
+    const validPts = pts.filter(p => p.x >= minX - TOLERANCE && p.x <= maxX + TOLERANCE && p.y >= minY - TOLERANCE && p.y <= maxY + TOLERANCE);
     
     // De-duplicate valid points
     const uniquePts: Point2D[] = [];
@@ -177,6 +201,8 @@ export function generateGraphicalData(model: LinearProgram): GraphicalData {
     feasiblePolygon: polygon,
     lines: plotLines,
     maxX,
-    maxY
+    maxY,
+    minX,
+    minY
   };
 }

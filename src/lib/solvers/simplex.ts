@@ -25,7 +25,11 @@ export class SimplexSolver {
       this.numVars = model.numVariables;
       this.numConstraints = model.constraints.length;
       
-      const tableau = this.buildTableau(model);
+      const { processedModel, postprocess } = this.preprocessModel(model);
+      this.numVars = processedModel.numVariables;
+      this.numConstraints = processedModel.constraints.length;
+
+      const tableau = this.buildTableau(processedModel);
       if (!tableau) {
          return this.createErrorResult("Erro fatal na construção do Tableau.");
       }
@@ -33,14 +37,79 @@ export class SimplexSolver {
       const { iterations, unbounded } = this.optimize(tableau);
       
       if (unbounded) {
-        return this.createUnboundedResult(iterations);
+        return postprocess(this.createUnboundedResult(iterations));
       }
       
-      return this.extractSolution(tableau, model.objectiveType, iterations);
+      return postprocess(this.extractSolution(tableau, processedModel.objectiveType, iterations));
       
     } catch (error) {
       return this.createErrorResult(error instanceof Error ? error.message : "Erro desconhecido no Solver.");
     }
+  }
+
+  private preprocessModel(model: LinearProgram): { processedModel: LinearProgram, postprocess: (r: SimplexResult) => SimplexResult } {
+    if (model.nonNegativity !== false && (!model.variableBounds || model.variableBounds.every(b => b === 0))) {
+      return { processedModel: model, postprocess: r => r };
+    }
+
+    const newConstraints: Constraint[] = [...model.constraints];
+    let newObjCoefs: number[] = [];
+    let numVars = model.numVariables;
+
+    if (model.nonNegativity === false) {
+      // Substitute X_j = X_j^+ - X_j^-
+      numVars = model.numVariables * 2;
+      for (let j = 0; j < model.numVariables; j++) {
+        newObjCoefs.push(model.objectiveCoefficients[j]);
+        newObjCoefs.push(-model.objectiveCoefficients[j]);
+      }
+      
+      for (let i = 0; i < newConstraints.length; i++) {
+        const newCoefs = [];
+        for (let j = 0; j < model.numVariables; j++) {
+          newCoefs.push(newConstraints[i].coefficients[j]);
+          newCoefs.push(-newConstraints[i].coefficients[j]);
+        }
+        newConstraints[i] = { ...newConstraints[i], coefficients: newCoefs };
+      }
+    } else {
+      newObjCoefs = [...model.objectiveCoefficients];
+      if (model.variableBounds) {
+        for (let j = 0; j < model.numVariables; j++) {
+          const bound = model.variableBounds[j];
+          if (bound > 0) {
+            const coefs = new Array(model.numVariables).fill(0);
+            coefs[j] = 1;
+            newConstraints.push({
+              id: crypto.randomUUID(),
+              coefficients: coefs,
+              operator: ">=",
+              rhs: bound
+            });
+          }
+        }
+      }
+    }
+
+    const processedModel: LinearProgram = {
+      ...model,
+      numVariables: numVars,
+      objectiveCoefficients: newObjCoefs,
+      constraints: newConstraints
+    };
+
+    const postprocess = (res: SimplexResult) => {
+      if (model.nonNegativity === false && res.status === "OPTIMAL") {
+        const finalVars = [];
+        for(let j=0; j<model.numVariables; j++) {
+          finalVars.push(res.variables[2*j] - res.variables[2*j+1]);
+        }
+        res.variables = finalVars;
+      }
+      return res;
+    };
+
+    return { processedModel, postprocess };
   }
 
   private buildTableau(model: LinearProgram): number[][] | null {
